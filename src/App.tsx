@@ -19,6 +19,9 @@ import Suppliers from "./pages/Suppliers";
 import Purchases from "./pages/Purchases";
 import Expenses from "./pages/Expenses";
 import Employees from "./pages/Employees";
+import Budgets from "./pages/Budgets";
+import ServiceOrders from "./pages/ServiceOrders";
+import Contracts from "./pages/Contracts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +58,9 @@ const AppContent = () => {
         <Route path="/compras" element={<ProtectedRoute allowedRoles={['admin']}><Purchases /></ProtectedRoute>} />
         <Route path="/despesas" element={<ProtectedRoute allowedRoles={['admin']}><Expenses /></ProtectedRoute>} />
         <Route path="/funcionarios" element={<ProtectedRoute allowedRoles={['admin']}><Employees /></ProtectedRoute>} />
+        <Route path="/orcamentos" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
+        <Route path="/ordens-servico" element={<ProtectedRoute><ServiceOrders /></ProtectedRoute>} />
+        <Route path="/contratos" element={<ProtectedRoute allowedRoles={['admin']}><Contracts /></ProtectedRoute>} />
         <Route path="/faturas" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
         <Route path="/relatorios" element={<ProtectedRoute allowedRoles={['admin']}><Reports /></ProtectedRoute>} />
         <Route path="/caixa" element={<ProtectedRoute><CashManagement /></ProtectedRoute>} />
