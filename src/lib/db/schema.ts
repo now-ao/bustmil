@@ -253,3 +253,191 @@ export const StockMovementSchema = z.object({
   created_at: z.string().datetime(),
 });
 export type StockMovement = z.infer<typeof StockMovementSchema>;
+
+// Budget/Quote Schema
+export const BudgetStatusSchema = z.enum(['draft', 'sent', 'approved', 'rejected', 'expired', 'converted']);
+export const BudgetSchema = z.object({
+  id: z.string().uuid(),
+  budget_number: z.number(),
+  client_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  issue_date: z.string().datetime(),
+  expiry_date: z.string().datetime(),
+  total_amount: z.number().min(0),
+  discount: z.number().min(0).default(0),
+  final_amount: z.number().min(0),
+  status: BudgetStatusSchema,
+  items: z.array(z.object({
+    product_id: z.string().uuid().optional(),
+    description: z.string(),
+    quantity: z.number().min(0.01),
+    unit_price: z.number().min(0),
+    subtotal: z.number().min(0),
+  })),
+  notes: z.string().max(1000).optional(),
+  terms: z.string().max(2000).optional(),
+  converted_sale_id: z.string().uuid().optional(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type Budget = z.infer<typeof BudgetSchema>;
+
+// Service Order Schema
+export const ServiceOrderStatusSchema = z.enum(['open', 'in_progress', 'waiting_parts', 'completed', 'cancelled']);
+export const ServiceOrderPrioritySchema = z.enum(['low', 'normal', 'high', 'urgent']);
+export const ServiceOrderSchema = z.object({
+  id: z.string().uuid(),
+  order_number: z.number(),
+  client_id: z.string().uuid(),
+  equipment: z.string().max(200),
+  serial_number: z.string().max(100).optional(),
+  reported_problem: z.string().max(1000),
+  diagnosis: z.string().max(1000).optional(),
+  solution: z.string().max(1000).optional(),
+  status: ServiceOrderStatusSchema,
+  priority: ServiceOrderPrioritySchema,
+  assigned_to: z.string().uuid().optional(), // employee_id
+  start_date: z.string().datetime(),
+  estimated_completion: z.string().datetime().optional(),
+  completion_date: z.string().datetime().optional(),
+  labor_cost: z.number().min(0).default(0),
+  parts_cost: z.number().min(0).default(0),
+  total_cost: z.number().min(0).default(0),
+  parts_used: z.array(z.object({
+    product_id: z.string().uuid(),
+    product_name: z.string(),
+    quantity: z.number().min(0.01),
+    unit_price: z.number().min(0),
+    subtotal: z.number().min(0),
+  })).optional(),
+  notes: z.string().max(1000).optional(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type ServiceOrder = z.infer<typeof ServiceOrderSchema>;
+
+// Contract Schema
+export const ContractStatusSchema = z.enum(['draft', 'active', 'suspended', 'expired', 'cancelled']);
+export const ContractTypeSchema = z.enum(['service', 'rental', 'supply', 'partnership', 'other']);
+export const ContractSchema = z.object({
+  id: z.string().uuid(),
+  contract_number: z.string().max(50),
+  title: z.string().max(200),
+  type: ContractTypeSchema,
+  client_id: z.string().uuid().optional(),
+  supplier_id: z.string().uuid().optional(),
+  start_date: z.string().datetime(),
+  end_date: z.string().datetime(),
+  value: z.number().min(0),
+  payment_terms: z.string().max(500),
+  status: ContractStatusSchema,
+  auto_renew: z.boolean().default(false),
+  renewal_notice_days: z.number().min(0).default(30),
+  description: z.string().max(2000).optional(),
+  terms: z.string().max(5000).optional(),
+  responsible_user_id: z.string().uuid(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type Contract = z.infer<typeof ContractSchema>;
+
+// Cost Center Schema
+export const CostCenterSchema = z.object({
+  id: z.string().uuid(),
+  code: z.string().max(20),
+  name: z.string().max(200),
+  description: z.string().max(500).optional(),
+  parent_id: z.string().uuid().optional(),
+  budget: z.number().min(0).default(0),
+  active: z.boolean().default(true),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type CostCenter = z.infer<typeof CostCenterSchema>;
+
+// Chart of Accounts Schema
+export const AccountTypeEnum = z.enum(['asset', 'liability', 'equity', 'revenue', 'expense']);
+export const ChartOfAccountSchema = z.object({
+  id: z.string().uuid(),
+  code: z.string().max(20),
+  name: z.string().max(200),
+  type: AccountTypeEnum,
+  parent_id: z.string().uuid().optional(),
+  level: z.number().min(1).max(5),
+  accept_entries: z.boolean().default(true),
+  description: z.string().max(500).optional(),
+  active: z.boolean().default(true),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type ChartOfAccount = z.infer<typeof ChartOfAccountSchema>;
+
+// Fixed Asset Schema
+export const AssetStatusSchema = z.enum(['active', 'inactive', 'maintenance', 'disposed']);
+export const FixedAssetSchema = z.object({
+  id: z.string().uuid(),
+  code: z.string().max(50),
+  name: z.string().max(200),
+  description: z.string().max(1000).optional(),
+  category: z.string().max(100),
+  acquisition_date: z.string().datetime(),
+  acquisition_value: z.number().min(0),
+  useful_life_months: z.number().min(1),
+  monthly_depreciation: z.number().min(0),
+  accumulated_depreciation: z.number().min(0).default(0),
+  residual_value: z.number().min(0).default(0),
+  location: z.string().max(200).optional(),
+  responsible_id: z.string().uuid().optional(), // employee_id
+  status: AssetStatusSchema,
+  disposal_date: z.string().datetime().optional(),
+  disposal_value: z.number().min(0).optional(),
+  notes: z.string().max(1000).optional(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type FixedAsset = z.infer<typeof FixedAssetSchema>;
+
+// Time Clock Schema
+export const TimeClockSchema = z.object({
+  id: z.string().uuid(),
+  employee_id: z.string().uuid(),
+  date: z.string().datetime(),
+  clock_in: z.string().optional(), // HH:MM
+  clock_out: z.string().optional(), // HH:MM
+  lunch_start: z.string().optional(), // HH:MM
+  lunch_end: z.string().optional(), // HH:MM
+  total_hours: z.number().min(0).default(0),
+  overtime_hours: z.number().min(0).default(0),
+  notes: z.string().max(500).optional(),
+  approved_by: z.string().uuid().optional(), // user_id
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type TimeClock = z.infer<typeof TimeClockSchema>;
+
+// Production Order Schema
+export const ProductionOrderStatusSchema = z.enum(['planned', 'in_progress', 'completed', 'cancelled']);
+export const ProductionOrderSchema = z.object({
+  id: z.string().uuid(),
+  order_number: z.number(),
+  product_id: z.string().uuid(),
+  product_name: z.string(),
+  quantity: z.number().min(0.01),
+  start_date: z.string().datetime(),
+  expected_completion: z.string().datetime(),
+  completion_date: z.string().datetime().optional(),
+  status: ProductionOrderStatusSchema,
+  materials: z.array(z.object({
+    product_id: z.string().uuid(),
+    product_name: z.string(),
+    quantity_needed: z.number().min(0.01),
+    quantity_used: z.number().min(0).default(0),
+  })),
+  labor_hours: z.number().min(0).default(0),
+  production_cost: z.number().min(0).default(0),
+  notes: z.string().max(1000).optional(),
+  responsible_id: z.string().uuid().optional(), // employee_id
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+export type ProductionOrder = z.infer<typeof ProductionOrderSchema>;

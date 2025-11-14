@@ -1,5 +1,5 @@
 const DB_NAME = 'erp_database';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 export const STORES = {
   USERS: 'users',
@@ -15,6 +15,14 @@ export const STORES = {
   PURCHASES: 'purchases',
   EXPENSES: 'expenses',
   EMPLOYEES: 'employees',
+  BUDGETS: 'budgets',
+  SERVICE_ORDERS: 'service_orders',
+  CONTRACTS: 'contracts',
+  COST_CENTERS: 'cost_centers',
+  CHART_OF_ACCOUNTS: 'chart_of_accounts',
+  FIXED_ASSETS: 'fixed_assets',
+  TIME_CLOCKS: 'time_clocks',
+  PRODUCTION_ORDERS: 'production_orders',
 } as const;
 
 class IndexedDBService {
@@ -136,6 +144,70 @@ class IndexedDBService {
           employeesStore.createIndex('document', 'document', { unique: true });
           employeesStore.createIndex('department', 'department', { unique: false });
           employeesStore.createIndex('active', 'active', { unique: false });
+        }
+
+        // Budgets store
+        if (!db.objectStoreNames.contains(STORES.BUDGETS)) {
+          const budgetsStore = db.createObjectStore(STORES.BUDGETS, { keyPath: 'id' });
+          budgetsStore.createIndex('budget_number', 'budget_number', { unique: true });
+          budgetsStore.createIndex('client_id', 'client_id', { unique: false });
+          budgetsStore.createIndex('status', 'status', { unique: false });
+          budgetsStore.createIndex('created_at', 'created_at', { unique: false });
+        }
+
+        // Service Orders store
+        if (!db.objectStoreNames.contains(STORES.SERVICE_ORDERS)) {
+          const serviceOrdersStore = db.createObjectStore(STORES.SERVICE_ORDERS, { keyPath: 'id' });
+          serviceOrdersStore.createIndex('order_number', 'order_number', { unique: true });
+          serviceOrdersStore.createIndex('client_id', 'client_id', { unique: false });
+          serviceOrdersStore.createIndex('status', 'status', { unique: false });
+          serviceOrdersStore.createIndex('assigned_to', 'assigned_to', { unique: false });
+        }
+
+        // Contracts store
+        if (!db.objectStoreNames.contains(STORES.CONTRACTS)) {
+          const contractsStore = db.createObjectStore(STORES.CONTRACTS, { keyPath: 'id' });
+          contractsStore.createIndex('contract_number', 'contract_number', { unique: true });
+          contractsStore.createIndex('status', 'status', { unique: false });
+          contractsStore.createIndex('end_date', 'end_date', { unique: false });
+        }
+
+        // Cost Centers store
+        if (!db.objectStoreNames.contains(STORES.COST_CENTERS)) {
+          const costCentersStore = db.createObjectStore(STORES.COST_CENTERS, { keyPath: 'id' });
+          costCentersStore.createIndex('code', 'code', { unique: true });
+          costCentersStore.createIndex('active', 'active', { unique: false });
+        }
+
+        // Chart of Accounts store
+        if (!db.objectStoreNames.contains(STORES.CHART_OF_ACCOUNTS)) {
+          const chartStore = db.createObjectStore(STORES.CHART_OF_ACCOUNTS, { keyPath: 'id' });
+          chartStore.createIndex('code', 'code', { unique: true });
+          chartStore.createIndex('type', 'type', { unique: false });
+          chartStore.createIndex('active', 'active', { unique: false });
+        }
+
+        // Fixed Assets store
+        if (!db.objectStoreNames.contains(STORES.FIXED_ASSETS)) {
+          const assetsStore = db.createObjectStore(STORES.FIXED_ASSETS, { keyPath: 'id' });
+          assetsStore.createIndex('code', 'code', { unique: true });
+          assetsStore.createIndex('status', 'status', { unique: false });
+          assetsStore.createIndex('category', 'category', { unique: false });
+        }
+
+        // Time Clocks store
+        if (!db.objectStoreNames.contains(STORES.TIME_CLOCKS)) {
+          const timeClocksStore = db.createObjectStore(STORES.TIME_CLOCKS, { keyPath: 'id' });
+          timeClocksStore.createIndex('employee_id', 'employee_id', { unique: false });
+          timeClocksStore.createIndex('date', 'date', { unique: false });
+        }
+
+        // Production Orders store
+        if (!db.objectStoreNames.contains(STORES.PRODUCTION_ORDERS)) {
+          const productionStore = db.createObjectStore(STORES.PRODUCTION_ORDERS, { keyPath: 'id' });
+          productionStore.createIndex('order_number', 'order_number', { unique: true });
+          productionStore.createIndex('product_id', 'product_id', { unique: false });
+          productionStore.createIndex('status', 'status', { unique: false });
         }
       };
     });
